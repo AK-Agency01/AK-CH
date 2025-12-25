@@ -9,25 +9,27 @@
 body {
   margin: 0;
   font-family: Tahoma, Arial, sans-serif;
-  background: #f9f9f9;
+  background: #f3f3f3;
 }
 .container {
   padding: 15px;
+  max-width: 480px;
+  margin: auto;
 }
 img.product {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 15px;
 }
 h1 {
   color: #e91e63;
   font-size: 26px;
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .price {
   text-align: center;
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 15px;
 }
 .price span {
@@ -37,42 +39,56 @@ h1 {
 .form-box {
   background: #fff;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
+
+/* === الهاتف === */
 .phone-box {
   display: flex;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 .country {
-  width: 80px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #eee;
+  width: 85px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #e91e63;
+  background: #ffe6ef;
   text-align: center;
   font-weight: bold;
+  font-size: 16px;
 }
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-button {
+input, textarea {
   width: 100%;
   padding: 14px;
   font-size: 17px;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 2px solid #333;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+textarea {
+  min-height: 90px;
+  resize: none;
+}
+input::placeholder, textarea::placeholder {
+  font-size: 15px;
+  color: #777;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
 }
 .order {
   background: #e91e63;
   color: #fff;
+  margin-top: 10px;
 }
 .whatsapp {
   background: #25d366;
@@ -80,7 +96,7 @@ button {
   margin-top: 8px;
 }
 .msg {
-  margin-top: 12px;
+  margin-top: 14px;
   font-weight: bold;
   text-align: center;
 }
@@ -96,18 +112,22 @@ button {
 <body>
 
 <div class="container">
+
   <img class="product" src="https://m.media-amazon.com/images/I/81KTWxfYjcL._AC_SL1500_.jpg" alt="مطبخ أطفال">
 
   <h1>مطبخ أطفال حقيقي</h1>
   <div class="price">بس بـ <span>25,000 دينار</span></div>
 
   <div class="form-box">
+
+    <!-- رقم الهاتف -->
     <div class="phone-box">
       <div class="country">+964</div>
-      <input type="tel" id="phone" placeholder="رقم الهاتف" required>
+      <input type="tel" id="phone" placeholder="مثال: 77XXXXXXXX" required>
     </div>
 
-    <input type="text" id="address" placeholder="العنوان بالتفصيل" required>
+    <!-- العنوان -->
+    <textarea id="address" placeholder="اكتب العنوان بالتفصيل (المحافظة، المنطقة، أقرب نقطة دالة)" required></textarea>
 
     <button class="order" onclick="sendOrder()">اطلب الآن</button>
 
@@ -124,7 +144,7 @@ button {
 <script>
 const TELEGRAM_TOKEN = '7602821198:AAHHrMz_Ny9BtNf2TLqHTJHZxD_UbUiMsME';
 const CHAT_ID = '-1002357992958';
-const STORAGE_KEY = "order_block_24h";
+const STORAGE_KEY = "last_order_time";
 
 async function sendOrder() {
   const phone = document.getElementById("phone").value.trim();
@@ -132,31 +152,24 @@ async function sendOrder() {
   const msg = document.getElementById("msg");
 
   if (!phone || !address) {
-    alert("رجاءً اكتب الرقم والعنوان");
+    alert("رجاءً املأ الرقم والعنوان");
     return;
   }
 
-  const last = localStorage.getItem(STORAGE_KEY);
+  const lastTime = localStorage.getItem(STORAGE_KEY);
   const now = Date.now();
-  if (last && now - last < 86400000) {
+
+  if (lastTime && now - lastTime < 86400000) {
     msg.style.color = "red";
-    msg.innerText = "⚠️ لا يمكنك إرسال طلب آخر إلا بعد 24 ساعة";
+    msg.innerText = "⚠️ تم إرسال طلب سابق، يمكنك الطلب مرة أخرى بعد 24 ساعة";
     return;
   }
-
-  let ip = "غير معروف";
-  try {
-    const res = await fetch("https://api.ipify.org?format=json");
-    const data = await res.json();
-    ip = data.ip;
-  } catch {}
 
   const text =
 `📦 طلب جديد (مطبخ أطفال)
 
 📞 الرقم: ${phone}
 📍 العنوان: ${address}
-🌐 IP: ${ip}
 ⏰ ${new Date().toLocaleString("ar-IQ")}`;
 
   fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -166,8 +179,8 @@ async function sendOrder() {
       chat_id: CHAT_ID,
       text: text
     })
-  }).then(r => {
-    if (r.ok) {
+  }).then(res => {
+    if (res.ok) {
       localStorage.setItem(STORAGE_KEY, now);
       msg.style.color = "green";
       msg.innerText = "✅ تم تثبيت الطلب بنجاح";
@@ -175,7 +188,7 @@ async function sendOrder() {
       document.getElementById("address").value = "";
     } else {
       msg.style.color = "red";
-      msg.innerText = "❌ فشل الإرسال، حاول مرة ثانية";
+      msg.innerText = "❌ حدث خطأ، حاول مرة أخرى";
     }
   });
 }
