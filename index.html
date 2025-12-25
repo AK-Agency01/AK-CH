@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مطبخ أطفال</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background: #f2f2f2;
+}
+.container {
+  max-width: 1100px;
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+}
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+}
+.hero img {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 12px;
+}
+.content {
+  flex: 1;
+}
+h1 {
+  color: #e91e63;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+.price {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+.price span {
+  color: #e91e63;
+  font-weight: bold;
+}
+ul li {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+.form-box {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 420px;
+}
+.phone-box {
+  display: flex;
+  gap: 8px;
+}
+.country {
+  width: 80px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #eee;
+  text-align: center;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.order {
+  background: #e91e63;
+  color: #fff;
+}
+.whatsapp {
+  background: #25d366;
+  color: #fff;
+  margin-top: 10px;
+}
+.msg {
+  margin-top: 10px;
+  font-weight: bold;
+}
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #999;
+  font-size: 13px;
+}
+@media (max-width: 768px) {
+  h1 { font-size: 26px; }
+  .hero { flex-direction: column; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="hero">
+    <img src="product.jpg" alt="مطبخ أطفال">
+
+    <div class="content">
+      <h1>مطبخ أطفال حقيقي</h1>
+      <div class="price">بس بـ <span>25,000 دينار</span></div>
+
+      <ul>
+        <li>✔️ آمن للأطفال</li>
+        <li>✔️ خامة قوية</li>
+        <li>✔️ توصيل لكل المحافظات</li>
+      </ul>
+
+      <div class="form-box">
+        <div class="phone-box">
+          <div class="country">+964</div>
+          <input type="tel" id="phone" placeholder="رقم الهاتف" required>
+        </div>
+
+        <input type="text" id="address" placeholder="العنوان بالتفصيل" required>
+
+        <button class="order" onclick="sendOrder()">اطلب الآن</button>
+
+        <a href="https://wa.me/9647737643575" target="_blank">
+          <button class="whatsapp">تواصل واتساب</button>
+        </a>
+
+        <div class="msg" id="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">تم الترويج بواسطة وكالة AK</div>
+</div>
+
+<script>
+const TELEGRAM_TOKEN = '7602821198:AAHHrMz_Ny9BtNf2TLqHTJHZxD_UbUiMsME';
+const CHAT_ID = '-1002357992958';
+const STORAGE_KEY = "order_block_24h";
+
+async function sendOrder() {
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!phone || !address) {
+    alert("رجاءً اكتب الرقم والعنوان");
+    return;
+  }
+
+  const last = localStorage.getItem(STORAGE_KEY);
+  const now = Date.now();
+  if (last && now - last < 86400000) {
+    msg.style.color = "red";
+    msg.innerText = "⚠️ لا يمكن إرسال طلب آخر إلا بعد 24 ساعة";
+    return;
+  }
+
+  let ip = "غير معروف";
+  try {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    ip = data.ip;
+  } catch {}
+
+  const text =
+`📦 طلب جديد (مطبخ أطفال)
+
+📞 الرقم: ${phone}
+📍 العنوان: ${address}
+🌐 IP: ${ip}
+⏰ ${new Date().toLocaleString("ar-IQ")}`;
+
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: text
+    })
+  }).then(r => {
+    if (r.ok) {
+      localStorage.setItem(STORAGE_KEY, now);
+      msg.style.color = "green";
+      msg.innerText = "✅ تم تثبيت الطلب بنجاح";
+      document.getElementById("phone").value = "";
+      document.getElementById("address").value = "";
+    } else {
+      msg.style.color = "red";
+      msg.innerText = "❌ فشل الإرسال";
+    }
+  });
+}
+</script>
+
+</body>
+</html>
