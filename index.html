@@ -25,7 +25,13 @@ h1 {
   color: #e91e63;
   font-size: 26px;
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+}
+.subtitle {
+  text-align: center;
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 10px;
 }
 .price {
   text-align: center;
@@ -43,7 +49,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-/* === الهاتف === */
+/* الهاتف */
 .phone-box {
   display: flex;
   gap: 8px;
@@ -116,6 +122,7 @@ button {
   <img class="product" src="https://m.media-amazon.com/images/I/81KTWxfYjcL._AC_SL1500_.jpg" alt="مطبخ أطفال">
 
   <h1>مطبخ أطفال حقيقي</h1>
+  <div class="subtitle">للطلب اكتب الرقم و العنوان</div>
   <div class="price">بس بـ <span>25,000 دينار</span></div>
 
   <div class="form-box">
@@ -123,11 +130,21 @@ button {
     <!-- رقم الهاتف -->
     <div class="phone-box">
       <div class="country">+964</div>
-      <input type="tel" id="phone" placeholder="مثال: 77XXXXXXXX" required>
+      <input
+        type="tel"
+        id="phone"
+        placeholder="مثال: 77XXXXXXXX"
+        inputmode="numeric"
+        maxlength="11"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+        required>
     </div>
 
     <!-- العنوان -->
-    <textarea id="address" placeholder="اكتب العنوان بالتفصيل (المحافظة، المنطقة، أقرب نقطة دالة)" required></textarea>
+    <textarea
+      id="address"
+      placeholder="اكتب العنوان بالتفصيل (المحافظة، المنطقة، أقرب نقطة دالة)"
+      required></textarea>
 
     <button class="order" onclick="sendOrder()">اطلب الآن</button>
 
@@ -151,8 +168,13 @@ async function sendOrder() {
   const address = document.getElementById("address").value.trim();
   const msg = document.getElementById("msg");
 
-  if (!phone || !address) {
-    alert("رجاءً املأ الرقم والعنوان");
+  if (phone.length < 10 || phone.length > 11) {
+    alert("رقم الهاتف يجب أن يكون من 10 إلى 11 رقم");
+    return;
+  }
+
+  if (!address) {
+    alert("رجاءً اكتب العنوان");
     return;
   }
 
