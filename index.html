@@ -9,54 +9,41 @@
 body {
   margin: 0;
   font-family: Tahoma, Arial, sans-serif;
-  background: #f2f2f2;
+  background: #f9f9f9;
 }
 .container {
-  max-width: 1100px;
-  margin: auto;
-  background: #fff;
-  padding: 30px;
+  padding: 15px;
 }
-.hero {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  align-items: center;
-}
-.hero img {
+img.product {
   width: 100%;
-  max-width: 520px;
   border-radius: 12px;
-}
-.content {
-  flex: 1;
+  margin-bottom: 15px;
 }
 h1 {
   color: #e91e63;
-  font-size: 32px;
-  margin-bottom: 10px;
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 8px;
 }
 .price {
-  font-size: 22px;
+  text-align: center;
+  font-size: 20px;
   margin-bottom: 15px;
 }
 .price span {
   color: #e91e63;
   font-weight: bold;
 }
-ul li {
-  margin-bottom: 8px;
-  font-size: 16px;
-}
 .form-box {
-  background: #fafafa;
+  background: #fff;
   padding: 20px;
-  border-radius: 12px;
-  max-width: 420px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 .phone-box {
   display: flex;
   gap: 8px;
+  margin-bottom: 10px;
 }
 .country {
   width: 80px;
@@ -90,21 +77,18 @@ button {
 .whatsapp {
   background: #25d366;
   color: #fff;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 .msg {
-  margin-top: 10px;
+  margin-top: 12px;
   font-weight: bold;
+  text-align: center;
 }
 .footer {
   text-align: center;
-  margin-top: 30px;
-  color: #999;
+  margin-top: 18px;
+  color: #666;
   font-size: 13px;
-}
-@media (max-width: 768px) {
-  h1 { font-size: 26px; }
-  .hero { flex-direction: column; }
 }
 </style>
 </head>
@@ -112,36 +96,26 @@ button {
 <body>
 
 <div class="container">
-  <div class="hero">
-    <img src="product.jpg" alt="مطبخ أطفال">
+  <img class="product" src="https://m.media-amazon.com/images/I/81KTWxfYjcL._AC_SL1500_.jpg" alt="مطبخ أطفال">
 
-    <div class="content">
-      <h1>مطبخ أطفال حقيقي</h1>
-      <div class="price">بس بـ <span>25,000 دينار</span></div>
+  <h1>مطبخ أطفال حقيقي</h1>
+  <div class="price">بس بـ <span>25,000 دينار</span></div>
 
-      <ul>
-        <li>✔️ آمن للأطفال</li>
-        <li>✔️ خامة قوية</li>
-        <li>✔️ توصيل لكل المحافظات</li>
-      </ul>
-
-      <div class="form-box">
-        <div class="phone-box">
-          <div class="country">+964</div>
-          <input type="tel" id="phone" placeholder="رقم الهاتف" required>
-        </div>
-
-        <input type="text" id="address" placeholder="العنوان بالتفصيل" required>
-
-        <button class="order" onclick="sendOrder()">اطلب الآن</button>
-
-        <a href="https://wa.me/9647737643575" target="_blank">
-          <button class="whatsapp">تواصل واتساب</button>
-        </a>
-
-        <div class="msg" id="msg"></div>
-      </div>
+  <div class="form-box">
+    <div class="phone-box">
+      <div class="country">+964</div>
+      <input type="tel" id="phone" placeholder="رقم الهاتف" required>
     </div>
+
+    <input type="text" id="address" placeholder="العنوان بالتفصيل" required>
+
+    <button class="order" onclick="sendOrder()">اطلب الآن</button>
+
+    <a href="https://wa.me/9647737643575" target="_blank">
+      <button class="whatsapp">تواصل واتساب</button>
+    </a>
+
+    <div class="msg" id="msg"></div>
   </div>
 
   <div class="footer">تم الترويج بواسطة وكالة AK</div>
@@ -166,7 +140,7 @@ async function sendOrder() {
   const now = Date.now();
   if (last && now - last < 86400000) {
     msg.style.color = "red";
-    msg.innerText = "⚠️ لا يمكن إرسال طلب آخر إلا بعد 24 ساعة";
+    msg.innerText = "⚠️ لا يمكنك إرسال طلب آخر إلا بعد 24 ساعة";
     return;
   }
 
@@ -201,7 +175,7 @@ async function sendOrder() {
       document.getElementById("address").value = "";
     } else {
       msg.style.color = "red";
-      msg.innerText = "❌ فشل الإرسال";
+      msg.innerText = "❌ فشل الإرسال، حاول مرة ثانية";
     }
   });
 }
